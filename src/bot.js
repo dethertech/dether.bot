@@ -21,7 +21,8 @@ bot.onEvent = function(session, message) {
 }
 
 function onMessage(session, message) {
-  welcome(session)
+  console.log('sisi', message.content.body);
+  tellers(session)
 }
 
 function onCommand(session, command) {
@@ -53,6 +54,11 @@ function tellers(session) {
 function contact(session) {
   // get telegram address
   sendMessage(session, 'Send telegram address link');
+}
+
+function next(session) {
+  // next tellers
+  sendMessage(session, 'Next teller');
 }
 
 // HELPERS
