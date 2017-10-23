@@ -8,7 +8,7 @@ let bot = new Bot()
 
 bot.onEvent = function(session, message) {
   switch (message.type) {
-    case 'Init':
+    case "Init":
       welcome(session)
       break
     case 'Message':
@@ -16,12 +16,6 @@ bot.onEvent = function(session, message) {
       break
     case 'Command':
       onCommand(session, message)
-      break
-    case 'Payment':
-      onPayment(session, message)
-      break
-    case 'PaymentRequest':
-      welcome(session)
       break
   }
 }
@@ -32,71 +26,42 @@ function onMessage(session, message) {
 
 function onCommand(session, command) {
   switch (command.content.value) {
-    case 'ping':
-      pong(session)
+    case 'tellers':
+      tellers(session)
       break
-    case 'count':
-      count(session)
+    case 'next':
+      next(session)
       break
-    case 'donate':
-      donate(session)
+    case 'contact':
+      contact(session)
       break
     }
-}
-
-function onPayment(session, message) {
-  if (message.fromAddress == session.config.paymentAddress) {
-    // handle payments sent by the bot
-    if (message.status == 'confirmed') {
-      // perform special action once the payment has been confirmed
-      // on the network
-    } else if (message.status == 'error') {
-      // oops, something went wrong with a payment we tried to send!
-    }
-  } else {
-    // handle payments sent to the bot
-    if (message.status == 'unconfirmed') {
-      // payment has been sent to the ethereum network, but is not yet confirmed
-      sendMessage(session, `Thanks for the payment! 🙏`);
-    } else if (message.status == 'confirmed') {
-      // handle when the payment is actually confirmed!
-    } else if (message.status == 'error') {
-      sendMessage(session, `There was an error with your payment!🚫`);
-    }
-  }
 }
 
 // STATES
 
 function welcome(session) {
-  sendMessage(session, `Hello Token!`)
+  sendMessage(session, `Hello from Dether!`)
 }
 
-function pong(session) {
-  sendMessage(session, `Pong`)
+function tellers(session) {
+  // get from from addr
+  // how to get txt from user
+  sendMessage(session, 'Send teller here');
 }
 
-// example of how to store state on each user
-function count(session) {
-  let count = (session.get('count') || 0) + 1
-  session.set('count', count)
-  sendMessage(session, `${count}`)
-}
-
-function donate(session) {
-  // request $1 USD at current exchange rates
-  Fiat.fetch().then((toEth) => {
-    session.requestEth(toEth.USD(1))
-  })
+function contact(session) {
+  // get telegram address
+  sendMessage(session, 'Send telegram address link');
 }
 
 // HELPERS
 
 function sendMessage(session, message) {
   let controls = [
-    {type: 'button', label: 'Ping', value: 'ping'},
-    {type: 'button', label: 'Count', value: 'count'},
-    {type: 'button', label: 'Donate', value: 'donate'}
+    {type: 'button', label: 'Get tellers', value: 'tellers'},
+    {type: 'button', label: 'Next', value: 'next'},
+    {type: 'button', label: 'Contact', value: 'contact'},
   ]
   session.reply(SOFA.Message({
     body: message,
