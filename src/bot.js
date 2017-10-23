@@ -1,3 +1,5 @@
+const detherGateway = require('dethergateway');
+
 const Bot = require('./lib/Bot')
 const SOFA = require('sofa-js')
 const Fiat = require('./lib/Fiat')
@@ -39,6 +41,11 @@ const demo = [
 const controls = [
   {type: 'button', label: 'Next', value: 'next'},
   {type: 'button', label: 'Contact', value: 'contact'},
+  {type: 'button', label: 'New address', value: 'new'},
+]
+
+const controlsNew = [
+  {type: 'button', label: 'Next', value: 'next'},
   {type: 'button', label: 'New address', value: 'new'},
 ]
 
@@ -128,6 +135,7 @@ const contact = session => session.reply(
     	"type": "image",
      	"url": "dether.png"
     }],
+    controls: controlsNew,
     showKeyboard: false,
   })
 )
