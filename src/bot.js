@@ -50,8 +50,11 @@ ADDRESS:\n${data.address}
 
 const formatedContact = data => `
 NAME: ${data.name}
-TELEGRAM: ${data.telegram}
 ADDRESS:\n${data.address}
+
+Please click on the following link to open chat with teller on TELEGRAM
+
+http://telegram.me/${data.messengerAddr}
 `
 
 
@@ -80,21 +83,15 @@ const onCommand = (session, command) => {
   switch (command.content.value) {
     case 'contact':
       contact(session)
-      break;
+      break
     case 'next':
       next(session)
-      break;
+      break
     case 'new':
       welcome(session)
-      break;
+      break
   }
 }
-
-
-
-
-
-
 
 
 
@@ -191,8 +188,5 @@ const next = session => {
         })
       )
     })
-    .catch((e) => {
-      console.log(e);
-      next(session)
-    })
+    .catch(() => next(session))
 }

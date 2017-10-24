@@ -77,7 +77,6 @@ const geocode = address =>
 
 const reverseGeocode = latlng =>
   new Promise((res, rej) => {
-    // const latlng = mapboxgl.LngLat.convert(latLngLike);
     const location = {
       latitude: latlng.lat,
       longitude: latlng.lng,
