@@ -12,11 +12,6 @@ let i = 0;
 
 const provider = 'https://kovan.infura.io/v604Wu8pXGoPC41ARh0B';
 
-const gpscoord = {
-  lng: 2.35237,
-  lat: 48.88361,
-}; // france
-
 let allTellers = [];
 
 const FIAT_CURRENCIES = ['USD', 'EUR', 'CNY', 'KRW', 'JPY'];
@@ -33,14 +28,13 @@ const AVATARS = [
   'dashboard-face_men4',
 ];
 
-
 const controls = [
   {type: 'button', label: 'Next', value: 'next'},
   {type: 'button', label: 'Contact', value: 'contact'},
   {type: 'button', label: 'New address', value: 'new'},
 ]
 
-const controlsNew = [
+const controlsNext = [
   {type: 'button', label: 'Next', value: 'next'},
   {type: 'button', label: 'New address', value: 'new'},
 ]
@@ -57,6 +51,7 @@ ADDRESS:\n${data.address}
 const formatedContact = data => `
 NAME: ${data.name}
 TELEGRAM: ${data.telegram}
+ADDRESS:\n${data.address}
 `
 
 
@@ -115,22 +110,25 @@ const welcome = session =>
 const getTeller = latlng =>
   new Promise((res, rej) => {
     mapboxAPI.getcountrycode(latlng)
-      .then((countrycode) => detherGateway.default.tellers.getZone(countrycode, provider))
-      .then((tellers) => res(tellers))
-      .catch((e) => rej(e))
+      .then(countrycode => detherGateway.default.tellers.getZone(countrycode, provider))
+      .then(tellers => res(tellers))
+      .catch(e => rej(e))
   })
 
 const onMessage = (session, message) => {
-  getTeller(gpscoord)
-    .then(tellers => mapboxAPI.sortGpsCoord(gpscoord, tellers))
+  let latlng;
+  mapboxAPI.geocode(message.body)
+    .then((res) => {
+      latlng = { lng: res.center[0], lat: res.center[1] };
+      return getTeller(latlng)
+    })
+    .then(tellers => mapboxAPI.sortGpsCoord(latlng, tellers))
     .then((sortTeller) => {
       allTellers = sortTeller.slice(0, 10);
       teller(session, allTellers[i]);
     })
-    .catch(e => addrError(session))
+    .catch(() => addrError(session))
 }
-
-
 
 
 
@@ -143,17 +141,24 @@ const addrError = session => session.reply(
     })
   )
 
-const teller = (session, teller) => session.reply(
-  SOFA.Message({
-  	body: formatedTeller(teller),
-   	attachments: [{
-    	"type": "image",
-     	"url": `${AVATARS[allTellers[i].avatarId]}.png`
-    }],
-    controls: controls,
-    showKeyboard: false,
-  })
-)
+const teller = (session, teller) => {
+  mapboxAPI.reverseGeocode({ lat: teller.lat, lng: teller.lng })
+    .then((res) => {
+      teller.address = res;
+      return session.reply(
+        SOFA.Message({
+          body: formatedTeller(teller),
+          attachments: [{
+            "type": "image",
+            "url": `${AVATARS[allTellers[i].avatarId]}.png`
+          }],
+          controls: controls,
+          showKeyboard: false,
+        })
+      )
+    })
+    .catch(() => next(session))
+}
 
 const contact = session => session.reply(
   SOFA.Message({
@@ -162,23 +167,32 @@ const contact = session => session.reply(
     	"type": "image",
      	"url": `${AVATARS[allTellers[i].avatarId]}.png`
     }],
-    controls: controlsNew,
+    controls: controlsNext,
     showKeyboard: false,
   })
 )
 
 const next = session => {
   i++;
-  if (i > 9) return welcome(session);
-  session.reply(
-    SOFA.Message({
-    	body: formatedTeller(allTellers[i]),
-     	attachments: [{
-      	"type": "image",
-       	"url": `${AVATARS[allTellers[i].avatarId]}.png`
-      }],
-      controls: controls,
-      showKeyboard: false,
+  if (i > 9 || !allTellers[i]) return welcome(session);
+
+  mapboxAPI.reverseGeocode({ lat: allTellers[i].lat, lng: allTellers[i].lng })
+    .then((res) => {
+      allTellers[i].address = res;
+      session.reply(
+        SOFA.Message({
+        	body: formatedTeller(allTellers[i]),
+         	attachments: [{
+          	"type": "image",
+           	"url": `${AVATARS[allTellers[i].avatarId]}.png`
+          }],
+          controls: controls,
+          showKeyboard: false,
+        })
+      )
     })
-  )
+    .catch((e) => {
+      console.log(e);
+      next(session)
+    })
 }

@@ -1,4 +1,5 @@
 const GeocodingAPI = require('mapbox/lib/services/geocoding');
+// const mapboxgl = require('mapbox-gl/dist/mapbox-gl');
 // you need to add a mapbox token in .env to use geocoding API
 // require('dotenv').config({ path: '.env' });
 
@@ -55,9 +56,52 @@ const getCountryId = latlng =>
     });
   });
 
-  const mapboxAPI = {
-    getcountrycode: getCountryId,
-    sortGpsCoord: sortCoord,
-  };
+const geocode = address =>
+  new Promise((res, rej) => {
+    const options = {
+      limit: 1,
+    };
+    client.geocodeForward(address, options, (err, data) => {
+      if (err) {
+        rej(err);
+      } else {
+        const results = data.features;
+        if (results && results.length > 0) {
+          res(results[0]);
+        } else {
+          rej(new Error('no results'));
+        }
+      }
+    });
+  });
 
-  module.exports = mapboxAPI;
+const reverseGeocode = latlng =>
+  new Promise((res, rej) => {
+    // const latlng = mapboxgl.LngLat.convert(latLngLike);
+    const location = {
+      latitude: latlng.lat,
+      longitude: latlng.lng,
+    };
+    client.geocodeReverse(location, (err, data) => {
+      if (err) {
+        rej(err);
+      } else {
+        const results = data.features;
+        if (results && results.length > 0) {
+          res(results[0].place_name);
+        } else {
+          rej(new Error('no results'));
+        }
+      }
+    });
+  });
+
+
+const mapboxAPI = {
+  getcountrycode: getCountryId,
+  sortGpsCoord: sortCoord,
+  geocode,
+  reverseGeocode,
+};
+
+module.exports = mapboxAPI;
