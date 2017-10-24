@@ -19,6 +19,21 @@ const gpscoord = {
 
 let allTellers = [];
 
+const FIAT_CURRENCIES = ['USD', 'EUR', 'CNY', 'KRW', 'JPY'];
+
+const AVATARS = [
+  'dashboard-face_noface',
+  'dashboard-face_women1',
+  'dashboard-face_men1',
+  'dashboard-face_women2',
+  'dashboard-face_men2',
+  'dashboard-face_women3',
+  'dashboard-face_men3',
+  'dashboard-face_women4',
+  'dashboard-face_men4',
+];
+
+
 const controls = [
   {type: 'button', label: 'Next', value: 'next'},
   {type: 'button', label: 'Contact', value: 'contact'},
@@ -32,10 +47,10 @@ const controlsNew = [
 
 const formatedTeller = data => `
 NAME: ${data.name}
-BALANCE: ${data.escrowBalance} ETH
+BALANCE: ${Math.round(data.escrowBalance * 10000) / 10000} ETH
 RATES: ${data.rates}
-VOLUME TRADE: ${data.volumeTrade} ETH
-CURRENCY: ${data.currency}
+VOLUME TRADE: ${Math.round(data.volumeTrade * 10000) / 10000} ETH
+CURRENCY: ${FIAT_CURRENCIES[data.currencyId]}
 ADDRESS:\n${data.address}
 `
 
@@ -133,7 +148,7 @@ const teller = (session, teller) => session.reply(
   	body: formatedTeller(teller),
    	attachments: [{
     	"type": "image",
-     	"url": "dether.png"
+     	"url": `${AVATARS[allTellers[i].avatarId]}.png`
     }],
     controls: controls,
     showKeyboard: false,
@@ -145,7 +160,7 @@ const contact = session => session.reply(
   	body: formatedContact(allTellers[i]),
    	attachments: [{
     	"type": "image",
-     	"url": "dether.png"
+     	"url": `${AVATARS[allTellers[i].avatarId]}.png`
     }],
     controls: controlsNew,
     showKeyboard: false,
@@ -160,7 +175,7 @@ const next = session => {
     	body: formatedTeller(allTellers[i]),
      	attachments: [{
       	"type": "image",
-       	"url": "dether.png"
+       	"url": `${AVATARS[allTellers[i].avatarId]}.png`
       }],
       controls: controls,
       showKeyboard: false,
