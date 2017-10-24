@@ -1,5 +1,6 @@
 const detherGateway = require('dethergateway');
 
+const mapboxAPI = require('./lib/MapBox');
 const Bot = require('./lib/Bot')
 const SOFA = require('sofa-js')
 const Fiat = require('./lib/Fiat')
@@ -8,35 +9,82 @@ let bot = new Bot()
 
 let i = 0;
 
-const demo = [
-  {
-    name: 'ishak',
-    escrowBalance: 12.5,
-    rates: 74.5,
-    volumeTrade: 320,
-    currency: '$',
-    address: '33 rue la fayette, 75009 Paris France',
-    telegram: 'ishak',
-  },
-  {
-    name: 'ishak2',
-    escrowBalance: 12.5,
-    rates: 74.5,
-    volumeTrade: 320,
-    currency: '$',
-    address: '33 rue la fayette, 75009 Paris France',
-    telegram: 'ishak',
-  },
-  {
-    name: 'ishak3',
-    escrowBalance: 12.5,
-    rates: 74.5,
-    volumeTrade: 320,
-    currency: '$',
-    address: '33 rue la fayette, 75009 Paris France',
-    telegram: 'ishak',
-  }
-]
+const provider = 'https://kovan.infura.io/v604Wu8pXGoPC41ARh0B';
+const gpscoord = {
+  lng: 2.35237,
+  lat: 48.88361,
+}; // france
+
+const getTeller = latlng => {
+  mapboxAPI.getcountrycode(latlng)
+    .then((countrycode) => {
+      console.log('countrycode -> ', countrycode)
+      detherGateway.default.tellers.getZone(countrycode, provider)
+        .then((tellers) => {
+          // Call teller
+          console.log(tellers);
+          return tellers;
+        })
+        .catch((e) => {
+          console.log(e);
+          return null;
+        })
+    })
+    .catch((e) => {
+      console.log(e);
+      return null;
+    })
+}
+
+// const getTellers = () => {
+//   getTeller(gpscoord)
+//     .then((tellers) => {
+//       return mapboxAPI.sortGpsCoord(gpscoord, tellers);
+//     })
+//     .then((sortTeller) => {
+//       demo = sortTeller;
+//     })
+//     .catch((e) => {
+//       console.log(e);
+//     })
+// };
+
+
+
+
+
+
+let demo = [];
+
+// [
+//   {
+//     name: 'ishak',
+//     escrowBalance: 12.5,
+//     rates: 74.5,
+//     volumeTrade: 320,
+//     currency: '$',
+//     address: '33 rue la fayette, 75009 Paris France',
+//     telegram: 'ishak',
+//   },
+//   {
+//     name: 'ishak2',
+//     escrowBalance: 12.5,
+//     rates: 74.5,
+//     volumeTrade: 320,
+//     currency: '$',
+//     address: '33 rue la fayette, 75009 Paris France',
+//     telegram: 'ishak',
+//   },
+//   {
+//     name: 'ishak3',
+//     escrowBalance: 12.5,
+//     rates: 74.5,
+//     volumeTrade: 320,
+//     currency: '$',
+//     address: '33 rue la fayette, 75009 Paris France',
+//     telegram: 'ishak',
+//   }
+// ]
 
 const controls = [
   {type: 'button', label: 'Next', value: 'next'},
@@ -102,11 +150,26 @@ const welcome = session =>
   )
 
 const onMessage = (session, message) => {
-  setTimeout(() => {
-      // console.log('sisi', message.content.body);
-    // addrError(session);
-    teller(session, demo[i]);
-  }, 3000)
+  getTeller(gpscoord)
+    .then((tellers) => {
+      return mapboxAPI.sortGpsCoord(gpscoord, tellers);
+    })
+    .then((sortTeller) => {
+      demo = sortTeller;
+      console.log(sortTeller);
+      teller(session, demo[i]);
+    })
+    .catch((e) => {
+      console.log(e);
+      addrError(session);
+    })
+
+  //
+  // setTimeout(() => {
+  //     // console.log('sisi', message.content.body);
+  //   // addrError(session);
+  //   teller(session, demo[i]);
+  // }, 3000)
 }
 
 const addrError = session => session.reply(
