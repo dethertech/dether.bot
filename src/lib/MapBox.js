@@ -2,9 +2,7 @@ const GeocodingAPI = require('mapbox/lib/services/geocoding');
 
 const client = new GeocodingAPI(process.env.DETHER_BOT_MAPBOX_TOKEN);
 
-
 const geoDistance = (latitudeFrom, longitudeFrom, latitudeTo, longitudeTo) => {
-  // convert from degrees to radians
   const earthRadius = 6371000;
   const latFrom = latitudeFrom * (Math.PI / 180);
   const lonFrom = longitudeFrom * (Math.PI / 180);
@@ -13,7 +11,10 @@ const geoDistance = (latitudeFrom, longitudeFrom, latitudeTo, longitudeTo) => {
   const latDelta = latTo - latFrom;
   const lonDelta = lonTo - lonFrom;
 
-  const angle = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(latDelta / 2), 2) + Math.cos(latFrom) * Math.cos(latTo) * Math.pow(Math.sin(lonDelta / 2), 2)));
+  const angle = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(latDelta / 2), 2)
+    + Math.cos(latFrom)
+    * Math.cos(latTo)
+    * Math.pow(Math.sin(lonDelta / 2), 2)));
   return angle * earthRadius;
 };
 
@@ -28,64 +29,50 @@ const sortGpsCoord = (poi, gpsTab) =>
 
 const getcountrycode = latlng =>
   new Promise((res, rej) => {
-    const location = {
-      latitude: latlng.lat,
-      longitude: latlng.lng,
-    };
-    const options = {
-      limit: 1,
-      types: 'country',
-    };
-
-    client.geocodeReverse(location, options, (err, data) => {
-      if (err) {
-        rej(err);
-      } else {
-        const results = data.features;
-        if (results && results.length > 0) {
-          res((results[0].id).replace(/\D/g, ''));
-        } else {
-          rej(new Error('no results'));
+    client.geocodeReverse({
+        latitude: latlng.lat,
+        longitude: latlng.lng,
+      },
+      {
+        limit: 1,
+        types: 'country',
+      },
+      (err, data) => {
+        if (err) rej(err);
+        else {
+          const results = data.features;
+          if (results && results.length > 0) {
+            res((results[0].id).replace(/\D/g, ''));
+          }
+          else rej(new Error('no results'));
         }
       }
-    });
+    );
   });
 
 const geocode = address =>
   new Promise((res, rej) => {
-    const options = {
-      limit: 1,
-    };
-    client.geocodeForward(address, options, (err, data) => {
-      if (err) {
-        rej(err);
-      } else {
+    client.geocodeForward(address, { limit: 1 }, (err, data) => {
+      if (err) rej(err);
+      else {
         const results = data.features;
-        if (results && results.length > 0) {
-          res(results[0]);
-        } else {
-          rej(new Error('no results'));
-        }
+        if (results && results.length > 0) res(results[0]);
+        else rej(new Error('no results'));
       }
     });
   });
 
 const reverseGeocode = latlng =>
   new Promise((res, rej) => {
-    const location = {
+    client.geocodeReverse({
       latitude: latlng.lat,
       longitude: latlng.lng,
-    };
-    client.geocodeReverse(location, (err, data) => {
-      if (err) {
-        rej(err);
-      } else {
+    }, (err, data) => {
+      if (err) rej(err);
+      else {
         const results = data.features;
-        if (results && results.length > 0) {
-          res(results[0].place_name);
-        } else {
-          rej(new Error('no results'));
-        }
+        if (results && results.length > 0) res(results[0].place_name);
+        else rej(new Error('no results'));
       }
     });
   });
@@ -93,7 +80,7 @@ const reverseGeocode = latlng =>
 
 const mapboxAPI = {
   getcountrycode,
-  sortGpsCoord: sortGpsCoord,
+  sortGpsCoord,
   geocode,
   reverseGeocode,
 };
