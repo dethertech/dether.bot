@@ -1,11 +1,6 @@
 const GeocodingAPI = require('mapbox/lib/services/geocoding');
-// const mapboxgl = require('mapbox-gl/dist/mapbox-gl');
-// you need to add a mapbox token in .env to use geocoding API
-// require('dotenv').config({ path: '.env' });
 
-// const token = process.env.TEST_MAPBOX_TOKEN;
-
-const client = new GeocodingAPI('pk.eyJ1IjoibWVoZGlkdHIiLCJhIjoiY2o4ZW9zdWxpMHI4azJxbnZvcW0xNGtieSJ9.c-SJnFhWfYMEx4K4BB951A');
+const client = new GeocodingAPI(process.env.DETHER_BOT_MAPBOX_TOKEN);
 
 
 const geoDistance = (latitudeFrom, longitudeFrom, latitudeTo, longitudeTo) => {
@@ -22,7 +17,7 @@ const geoDistance = (latitudeFrom, longitudeFrom, latitudeTo, longitudeTo) => {
   return angle * earthRadius;
 };
 
-const sortCoord = (poi, gpsTab) =>
+const sortGpsCoord = (poi, gpsTab) =>
   gpsTab.sort(function(a, b) {
     const distA = geoDistance(poi.lat, poi.lng, a.lat, a.lng);
     const distB = geoDistance(poi.lat, poi.lng, b.lat, b.lng);
@@ -31,7 +26,7 @@ const sortCoord = (poi, gpsTab) =>
 
 
 
-const getCountryId = latlng =>
+const getcountrycode = latlng =>
   new Promise((res, rej) => {
     const location = {
       latitude: latlng.lat,
@@ -97,8 +92,8 @@ const reverseGeocode = latlng =>
 
 
 const mapboxAPI = {
-  getcountrycode: getCountryId,
-  sortGpsCoord: sortCoord,
+  getcountrycode,
+  sortGpsCoord: sortGpsCoord,
   geocode,
   reverseGeocode,
 };

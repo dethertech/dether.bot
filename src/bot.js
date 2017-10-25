@@ -5,6 +5,7 @@ const Bot = require('./lib/Bot')
 const SOFA = require('sofa-js')
 const Fiat = require('./lib/Fiat')
 
+
 let bot = new Bot()
 
 // DATA
@@ -109,7 +110,7 @@ const welcome = session =>
 const getTeller = latlng =>
   new Promise((res, rej) => {
     mapboxAPI.getcountrycode(latlng)
-      .then(countrycode => detherGateway.default.tellers.getZone(countrycode, provider))
+      .then(countrycode => detherGateway.default.tellers.getZone(countrycode, process.env.DETHER_BOT_PROVIDER))
       .then(tellers => res(tellers))
       .catch(e => rej(e))
   })
