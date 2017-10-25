@@ -29,30 +29,32 @@ const AVATARS = [
 ];
 
 const controls = [
-  {type: 'button', label: 'Next', value: 'next'},
-  {type: 'button', label: 'Contact', value: 'contact'},
-  {type: 'button', label: 'New address', value: 'new'},
+  {type: 'button', label: 'Trade', value: 'contact'},
+  {type: 'button', label: 'New seller', value: 'next'},
+  {type: 'button', label: 'New location', value: 'new'},
 ]
 
 const controlsNext = [
-  {type: 'button', label: 'Next', value: 'next'},
-  {type: 'button', label: 'New address', value: 'new'},
+  {type: 'button', label: 'New seller', value: 'next'},
+  {type: 'button', label: 'New location', value: 'new'},
 ]
 
 const formatedTeller = data => `
-NAME: ${data.name}
-BALANCE: ${Math.round(data.escrowBalance * 10000) / 10000} ETH
-RATES: ${data.rates}
-VOLUME TRADE: ${Math.round(data.volumeTrade * 10000) / 10000} ETH
-CURRENCY: ${FIAT_CURRENCIES[data.currencyId]}
-ADDRESS:\n${data.address}
+Hi, my name is ${data.name}.
+I can sell you ${Math.round(data.escrowBalance * 10000) / 10000} ETH.
+I take a fee of ${data.rates / 100}%.
+So far, I have traded ${Math.round(data.volumeTrade * 10000) / 10000} ETH.
+I accept ${FIAT_CURRENCIES[data.currencyId]}.
+
+Want to trade?
 `
 
 const formatedContact = data => `
-NAME: ${data.name}
-ADDRESS:\n${data.address}
+Cool!
 
-Please click on the following link to open chat with teller on TELEGRAM
+We can meet up around ${data.address}.
+
+Click on this Telegram link so we can chat to organize a meeting:
 
 http://telegram.me/${data.messengerAddr}
 `
@@ -99,7 +101,7 @@ const onCommand = (session, command) => {
 const welcome = session =>
   session.reply(
     SOFA.Message({
-      body: 'Hello from Dether! Please enter your address to locate the closest tellers',
+      body: 'Hello from Dether!\nPlease enter your location to find the closest ether sellers.',
       showKeyboard: true
     })
   )
