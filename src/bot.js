@@ -1,21 +1,16 @@
 const detherGateway = require('dethergateway');
-
 const mapboxAPI = require('./lib/MapBox');
 const Bot = require('./lib/Bot')
 const SOFA = require('sofa-js')
 const Fiat = require('./lib/Fiat')
 
+// DATA
 
 let bot = new Bot()
-
-// DATA
 let i = 0;
+let allTellers
 
-const provider = 'https://kovan.infura.io/v604Wu8pXGoPC41ARh0B';
-
-let allTellers = [];
-
-const FIAT_CURRENCIES = ['USD', 'EUR', 'CNY', 'KRW', 'JPY'];
+const FIAT_CURRENCIES = ['USD', 'EUR', 'CNY', 'KRW', 'JPY']
 
 const AVATARS = [
   'dashboard-face_noface',
@@ -27,7 +22,7 @@ const AVATARS = [
   'dashboard-face_men3',
   'dashboard-face_women4',
   'dashboard-face_men4',
-];
+]
 
 const controls = [
   {type: 'button', label: 'Trade', value: 'contact'},
@@ -63,10 +58,6 @@ http://telegram.me/${data.messengerAddr}
 
 
 
-
-
-
-
 // ROUTING
 bot.onEvent = (session, message) => {
   switch (message.type) {
@@ -98,6 +89,8 @@ const onCommand = (session, command) => {
 
 
 
+
+
 // STATES
 const welcome = session =>
   session.reply(
@@ -107,13 +100,6 @@ const welcome = session =>
     })
   )
 
-const getTeller = latlng =>
-  new Promise((res, rej) => {
-    mapboxAPI.getcountrycode(latlng)
-      .then(countrycode => detherGateway.default.tellers.getZone(countrycode, process.env.DETHER_BOT_PROVIDER))
-      .then(tellers => res(tellers))
-      .catch(e => rej(e))
-  })
 
 const onMessage = (session, message) => {
   let latlng;
@@ -128,36 +114,6 @@ const onMessage = (session, message) => {
       teller(session, allTellers[i]);
     })
     .catch(() => addrError(session))
-}
-
-
-
-
-// FORMATED DATA
-const addrError = session => session.reply(
-    SOFA.Message({
-      body: 'Invalid address, please enter a valid address',
-      showKeyboard: true
-    })
-  )
-
-const teller = (session, teller) => {
-  mapboxAPI.reverseGeocode({ lat: teller.lat, lng: teller.lng })
-    .then((res) => {
-      teller.address = res;
-      return session.reply(
-        SOFA.Message({
-          body: formatedTeller(teller),
-          attachments: [{
-            "type": "image",
-            "url": `${AVATARS[allTellers[i].avatarId]}.png`
-          }],
-          controls: controls,
-          showKeyboard: false,
-        })
-      )
-    })
-    .catch(() => next(session))
 }
 
 const contact = session => session.reply(
@@ -185,6 +141,45 @@ const next = session => {
          	attachments: [{
           	"type": "image",
            	"url": `${AVATARS[allTellers[i].avatarId]}.png`
+          }],
+          controls: controls,
+          showKeyboard: false,
+        })
+      )
+    })
+    .catch(() => next(session))
+}
+
+
+
+
+// FORMATED DATA
+
+const getTeller = latlng =>
+  new Promise((res, rej) => {
+    mapboxAPI.getcountrycode(latlng)
+      .then(countrycode => detherGateway.default.tellers.getZone(countrycode, process.env.DETHER_BOT_PROVIDER))
+      .then(tellers => res(tellers))
+      .catch(e => rej(e))
+  })
+
+const addrError = session => session.reply(
+    SOFA.Message({
+      body: 'Invalid address, please enter a valid address',
+      showKeyboard: true
+    })
+  )
+
+const teller = (session, teller) => {
+  mapboxAPI.reverseGeocode({ lat: teller.lat, lng: teller.lng })
+    .then((res) => {
+      teller.address = res;
+      return session.reply(
+        SOFA.Message({
+          body: formatedTeller(teller),
+          attachments: [{
+            "type": "image",
+            "url": `${AVATARS[allTellers[i].avatarId]}.png`
           }],
           controls: controls,
           showKeyboard: false,
