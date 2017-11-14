@@ -7,7 +7,7 @@ const Fiat = require('./lib/Fiat')
 // DATA
 
 let dether = new DetherJS({
-  network: process.env.DETHER_BOT_PROVIDER,
+  network: 'kovan',
 });
 
 let bot = new Bot()
@@ -162,7 +162,7 @@ const next = session => {
 const getTeller = latlng =>
   new Promise((res, rej) => {
     mapboxAPI.getcountrycode(latlng)
-      .then(countrycode => dether.getTellersInZone(countrycode))
+      .then(countrycode => dether.getTellersInZone(Number(countrycode)))
       .then(tellers => res(tellers))
       .catch(e => rej(e))
   })
