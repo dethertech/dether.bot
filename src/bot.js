@@ -66,6 +66,7 @@ http://telegram.me/${data.messengerAddr}
 bot.onEvent = (session, message) => {
   switch (message.type) {
     case 'Init':
+      alertKovan(session)
       welcome(session)
       break
     case 'Message':
@@ -99,8 +100,15 @@ const onCommand = (session, command) => {
 const welcome = session =>
   session.reply(
     SOFA.Message({
-      body: 'Dether\'s bot run on kovan testnet, it\'s only for testing purpose, don\'t try to buy real ethers from someone. \nHello from Dether!\nPlease enter your location to find the closest ether sellers.',
+      body: 'Hello from Dether!\nPlease enter your location to find the closest ether sellers.',
       showKeyboard: true
+    })
+  )
+
+const alertKovan = session =>
+  session.reply(
+    SOFA.Message({
+      body: 'Dether\'s bot run on kovan testnet, it\'s only for testing purpose, don\'t try to buy real ethers from someone.',
     })
   )
 
