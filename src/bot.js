@@ -99,7 +99,7 @@ const onCommand = (session, command) => {
 const welcome = session =>
   session.reply(
     SOFA.Message({
-      body: 'Hello from Dether!\nPlease enter your location to find the closest ether sellers.',
+      body: 'Dether\'s bot run on kovan testnet, it\'s only for testing purpose, don\'t try to buy real ethers from someone. \nHello from Dether!\nPlease enter your location to find the closest ether sellers.',
       showKeyboard: true
     })
   )
