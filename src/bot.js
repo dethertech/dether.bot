@@ -110,7 +110,7 @@ const welcome = session => {
 const alertKovan = session =>
   session.reply(
     SOFA.Message({
-      body: 'Dether\'s bot run on kovan testnet, it\'s only for testing purpose, don\'t try to buy real ethers from someone.',
+      body: '**WARNING** Dether\'s bot run on kovan testnet, it\'s only for testing purpose, don\'t try to buy real ethers from someone.',
     })
   )
 
