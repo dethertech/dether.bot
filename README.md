@@ -4,20 +4,14 @@ This repo is a bot made for [Toshi app](https://www.toshi.org) in Javascript. Ba
 
 You can enter your location and get the teller close to you.
 
-All the logic is on src/bot.js.
+All the logic is on [`src/bot.js`](src/bot.js).
 
-TODO
+You can scan this QR code to access to the bot on toshi:
 
-* sending image messages
-* creating web view UIs
+![dether bot](https://raw.githubusercontent.com/dethertech/dether.bot/master/attachments/toshi.png)
 
-## Launch your own Toshi app in 5 minutes
 
-Read our [guide to creating a Toshi app](http://developers.toshi.org/docs/creating-a-token-app).
 
-When ready, fork this repo and deploy it to Heroku.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-Then check out [`src/bot.js`](src/bot.js) to start changing the bot logic.
+More documentation about TOSHI BOT here: [guide to creating a Toshi app](http://developers.toshi.org/docs/creating-a-token-app).
 
