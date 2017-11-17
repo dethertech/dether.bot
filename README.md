@@ -1,13 +1,10 @@
-# Toshi SOFA App
+# Dether Toshi BOT
 
-This repo helps you build a [Toshi app](https://www.toshi.org) in Javascript.
+This repo is a bot made for [Toshi app](https://www.toshi.org) in Javascript. Based on [Dether.js](https://github.com/dethertech/dether.js).
 
-The sample bot can:
+You can enter your location and get the teller close to you.
 
-* send messages
-* send and request money
-* create simple UI for buttons and menus
-* store sessions and state for each user
+All the logic is on src/bot.js.
 
 TODO
 
@@ -24,41 +21,3 @@ When ready, fork this repo and deploy it to Heroku.
 
 Then check out [`src/bot.js`](src/bot.js) to start changing the bot logic.
 
-## Running locally with Docker
-
-You can run the project locally with
-
-```
-docker-compose up
-```
-
-If any new depencies are added you can rebuild the project with
-
-```
-docker-compose build
-```
-
-To reset the postgres database in your dev environment you can use
-
-```
-docker-compose down -v
-```
-
-## Architecture
-
-Deploying a Toshi app requires a few processes to run:
-
-* **toshi-headless-client**<br>
-  This is a client we provide (similar to the iOS or Android client) that provides a wrapper around the Toshi backend services. It also handles end-to-end encrypting all messages using the Signal protocol. It is written in Java and runs in the background, proxying all the requests to and from your bot.
-* **redis**<br>
-  We use redis pub/sub to provide a connection between the toshi-headless-client and your bot.
-* **bot.js**<br>
-  This is where all your app logic lives.
-* **postgres**<br>
-  Postgres is used to store session data so you can persist state for each user who talks to your bot (similar to cookies in a web browser).
-
-![diagram](docs/images/app-architecture.png)
-
-## See also
-
-* [https://www.toshi.org]
